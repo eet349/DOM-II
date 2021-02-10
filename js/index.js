@@ -6,6 +6,7 @@ const contentSectionImages = document.querySelectorAll(
 const srcArray = Array.from(contentSectionImages).map((image) => image.src);
 contentSectionImages.forEach((section) => {
 	section.addEventListener('click', (event) => {
+		event.stopImmediatePropagation();
 		if (contentSectionImages[0].src === srcArray[0]) {
 			contentSectionImages[0].setAttribute('src', srcArray[1]);
 			contentSectionImages[1].setAttribute('src', srcArray[0]);
@@ -47,13 +48,35 @@ document.addEventListener('keydown', (event) => {
 });
 
 // 4. Event Listener 4: keyup
-// TODO: keyup on the space brings you back to the top
+document.addEventListener('keyup', (event) => {
+	if (event.code === 'Space') {
+		document.querySelector('body').scrollIntoView();
+	}
+});
 
 // 5. Event Listener 5: scroll
-// TODO:
-
+let scrollDelta = 0;
+const colorArray = [
+	'#8B0000',
+	'#FF8C00',
+	'#BDB76B',
+	'#5F9EA0',
+	'#7FFFD4',
+	'#008B8B',
+	'#8A2BE2',
+	'#2F4F4F',
+	'#F08080',
+	'#B0C4DE',
+];
+const logoHeading = document.querySelector('.logo-heading');
+document.addEventListener('scroll', (event) => {
+	if (Math.floor(event.timeStamp) - scrollDelta > 1000) {
+		scrollDelta = event.timeStamp;
+		let randInd = Math.round(event.timeStamp) % 10;
+		logoHeading.style.color = colorArray[randInd];
+	}
+});
 // 6. Event Listener 6: wheel
-// TODO:
 const allH2Tags = document.querySelectorAll('h2');
 
 allH2Tags.forEach((h2Tag) => {
@@ -67,8 +90,6 @@ allH2Tags.forEach((h2Tag) => {
 });
 
 // 7. Event Listener 7: mouseover
-// TODO: mouseover h2s to increase font-size
-
 const allPTags = document.querySelectorAll('p');
 
 allPTags.forEach((pTag) => {
@@ -76,6 +97,7 @@ allPTags.forEach((pTag) => {
 		event.target.style.color = 'orange';
 	});
 });
+
 // 8. Event Listener 8: mouseout
 allPTags.forEach((pTag) => {
 	pTag.addEventListener('mouseout', (event) => {
@@ -83,7 +105,18 @@ allPTags.forEach((pTag) => {
 	});
 });
 
-// 9. Event Listener 9: select
+// 9. Event Listener 9: mousemove
+
+let mousemoveDelta = 0;
+document.addEventListener('mousemove', (event) => {
+	if (Math.floor(event.timeStamp) - mousemoveDelta > 1000) {
+		mousemoveDelta = event.timeStamp;
+		let randInd = Math.round(event.timeStamp) % 10;
+		allH2Tags.forEach((h2Tag) => {
+			h2Tag.style.color = colorArray[randInd];
+		});
+	}
+});
 
 // 10. Event Listener 10: load
 const bodyElm = document.querySelector('body');
@@ -100,5 +133,26 @@ Array.from(document.links).forEach((link) => {
 	link.addEventListener('click', (event) => {
 		link.style.color = '#bbb';
 		event.preventDefault();
+	});
+});
+
+// Stop propagation
+// The actual stopImmediatePropagation() call is in the first listener further up the page because that is the one that fires first. If I had put this listener first, then it would be in this listener
+const contentSections = document.querySelectorAll('.content-section');
+
+contentSections.forEach((contentSection) => {
+	let isBig = false;
+	contentSection.addEventListener('click', (event) => {
+		if (!isBig) {
+			contentSection.querySelectorAll('p').forEach((p) => {
+				p.style.fontSize = '2rem';
+			});
+			isBig = true;
+		} else if (isBig) {
+			contentSection.querySelectorAll('p').forEach((p) => {
+				p.style.fontSize = '1.6rem';
+			});
+			isBig = false;
+		}
 	});
 });
